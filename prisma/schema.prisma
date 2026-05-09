@@ -1,0 +1,183 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SessionStatus {
+  DRAFT
+  FINALIZED
+}
+
+enum AiRequestType {
+  SESSION_PLAN
+  STRUCTURED_NOTE
+  SUMMARY
+}
+
+enum AiRequestStatus {
+  SUCCESS
+  ERROR
+}
+
+model User {
+  id               String             @id @default(cuid())
+  email            String             @unique
+  name             String?
+  passwordHash     String
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  therapistProfile TherapistProfile?
+  clients          Client[]
+  authSessions     AuthSession[]
+  aiRequestLogs    AiRequestLog[]
+}
+
+model AuthSession {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model TherapistProfile {
+  id                     String   @id @default(cuid())
+  therapistId            String   @unique
+  therapist              User     @relation(fields: [therapistId], references: [id], onDelete: Cascade)
+  mainDiscipline         String
+  secondaryDisciplines   String?
+  therapeuticApproach    String?
+  targetAudience         String?
+  supportedIssues        String?
+  defaultSessionDuration Int?
+  accompanimentStyle     String?
+  professionalLimits     String?
+  language               String   @default("fr")
+  preferredTone          String?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+}
+
+model Client {
+  id             String                   @id @default(cuid())
+  therapistId    String
+  therapist      User                     @relation(fields: [therapistId], references: [id], onDelete: Cascade)
+  pseudonym      String
+  firstName      String?
+  lastName       String?
+  email          String?
+  phone          String?
+  address        String?
+  birthDate      DateTime?
+  adminNotes     String?
+  anamnesis      Anamnesis?
+  sessions       TherapySession[]
+  aiPlans        AiGeneratedSessionPlan[]
+  aiRequestLogs  AiRequestLog[]
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+
+  @@index([therapistId])
+  @@unique([therapistId, pseudonym])
+}
+
+model Anamnesis {
+  id                    String   @id @default(cuid())
+  clientId              String   @unique
+  client                Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  consultationReason    String?
+  mainGoal              String?
+  personalHistory       String?
+  medicalHistory        String?
+  currentTreatments     String?
+  medicationSupplements String?
+  allergies             String?
+  sleep                 String?
+  nutrition             String?
+  stress                String?
+  physicalActivity      String?
+  painSymptoms          String?
+  dominantEmotions      String?
+  lifeEvents            String?
+  dailyHabits           String?
+  familyContext         String?
+  professionalContext   String?
+  expectations          String?
+  contraindications     String?
+  warningSignals        String?
+  shortTermGoals        String?
+  mediumTermGoals       String?
+  freeNotes             String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model TherapySession {
+  id                     String        @id @default(cuid())
+  clientId               String
+  client                 Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  therapistId            String
+  sessionDate            DateTime      @default(now())
+  durationMinutes        Int?
+  sessionType            String?
+  objective              String?
+  clientState            String?
+  performedInterventions String?
+  observedReactions      String?
+  exercisesGiven         String?
+  pointsToRevisit        String?
+  nextStep               String?
+  rawNote                String?
+  structuredNote         String?
+  aiSessionPlan          String?
+  status                 SessionStatus @default(DRAFT)
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
+
+  @@index([clientId])
+  @@index([therapistId])
+}
+
+model AiGeneratedSessionPlan {
+  id              String   @id @default(cuid())
+  clientId        String
+  client          Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  therapistId     String
+  durationMinutes Int
+  sessionType     String?
+  dayObjective    String?
+  intensityLevel  String?
+  sessionStyle    String?
+  desiredTools    String?
+  avoid           String?
+  therapistNotes  String?
+  generatedContent String
+  createdAt       DateTime @default(now())
+
+  @@index([clientId])
+  @@index([therapistId])
+}
+
+model AiRequestLog {
+  id          String          @id @default(cuid())
+  therapistId String
+  therapist   User            @relation(fields: [therapistId], references: [id], onDelete: Cascade)
+  clientId    String?
+  client      Client?         @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  type        AiRequestType
+  provider    String          @default("openai")
+  model       String?
+  status      AiRequestStatus
+  error       String?
+  createdAt   DateTime        @default(now())
+
+  @@index([therapistId])
+  @@index([clientId])
+}
