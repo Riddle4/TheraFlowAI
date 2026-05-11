@@ -40,7 +40,7 @@ export function SessionCard({
             </a>
           ) : null}
           <Link
-            href={`/clients/${clientId}/sessions/${session.id}`}
+            href={`/app/clients/${clientId}/sessions/${session.id}`}
             className="rounded-md bg-ink px-3 py-1.5 text-xs font-semibold text-white"
           >
             Ouvrir

@@ -12,7 +12,7 @@ export function ClientTabs({ clientId, active }: { clientId: string; active: str
   return (
     <nav className="flex gap-2 overflow-x-auto border-b border-ink/10 pb-2" aria-label="Navigation client">
       {tabs.map((tab) => {
-        const href = tab.segment ? `/clients/${clientId}/${tab.segment}` : `/clients/${clientId}`;
+        const href = tab.segment ? `/app/clients/${clientId}/${tab.segment}` : `/app/clients/${clientId}`;
         const isActive = active === tab.segment;
         return (
           <Link

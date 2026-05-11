@@ -25,7 +25,7 @@ export default async function AiSessionPage({ params }: { params: Promise<{ clie
   return (
     <div className="grid gap-6">
       <div>
-        <Link href={`/clients/${client.id}`} className="text-sm font-semibold text-clay">
+        <Link href={`/app/clients/${client.id}`} className="text-sm font-semibold text-clay">
           Retour à la fiche
         </Link>
         <h1 className="mt-2 text-3xl font-semibold text-ink">Préparation IA</h1>

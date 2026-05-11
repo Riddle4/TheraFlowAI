@@ -33,10 +33,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
           <p className="mt-1 text-sm text-ink/55">Identifiant IA pseudonymisé : {client.pseudonym}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Link href={`/clients/${client.id}/sessions`} className="rounded-md bg-ink px-4 py-2.5 text-sm font-semibold text-white">
+          <Link href={`/app/clients/${client.id}/sessions`} className="rounded-md bg-ink px-4 py-2.5 text-sm font-semibold text-white">
             Nouvelle séance
           </Link>
-          <Link href={`/clients/${client.id}/ai-session`} className="rounded-md border border-sage/25 px-4 py-2.5 text-sm font-semibold text-sage hover:bg-mint">
+          <Link href={`/app/clients/${client.id}/ai-session`} className="rounded-md border border-sage/25 px-4 py-2.5 text-sm font-semibold text-sage hover:bg-mint">
             Préparer une séance IA
           </Link>
           <DeleteClientButton clientId={client.id} />
@@ -60,7 +60,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
           <section className="rounded-lg border border-ink/10 bg-paper p-5">
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-lg font-semibold">Anamnèse</h2>
-              <Link href={`/clients/${client.id}/anamnesis`} className="text-sm font-semibold text-clay">
+              <Link href={`/app/clients/${client.id}/anamnesis`} className="text-sm font-semibold text-clay">
                 Modifier
               </Link>
             </div>
@@ -72,7 +72,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
           <section className="rounded-lg border border-ink/10 bg-paper p-5">
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-lg font-semibold">Séances récentes</h2>
-              <Link href={`/clients/${client.id}/timeline`} className="text-sm font-semibold text-sage">
+              <Link href={`/app/clients/${client.id}/timeline`} className="text-sm font-semibold text-sage">
                 Timeline
               </Link>
             </div>
@@ -92,7 +92,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                 <div className="mt-4 max-h-[34rem] overflow-auto whitespace-pre-wrap pr-2 text-sm leading-6 text-ink/70">
                   {cleanAiText(client.aiPlans[0].generatedContent)}
                 </div>
-                <Link href={`/clients/${client.id}/ai-session`} className="mt-4 inline-flex text-sm font-semibold text-sage">
+                <Link href={`/app/clients/${client.id}/ai-session`} className="mt-4 inline-flex text-sm font-semibold text-sage">
                   Voir toutes les propositions
                 </Link>
               </details>

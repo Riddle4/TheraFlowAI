@@ -23,17 +23,68 @@ enum AiRequestStatus {
   ERROR
 }
 
+enum AccountStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum SubscriptionStatus {
+  NONE
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+}
+
+enum AccessRequestStatus {
+  NEW
+  CONTACTED
+  APPROVED
+  REJECTED
+}
+
 model User {
   id               String             @id @default(cuid())
   email            String             @unique
   name             String?
   passwordHash     String
+  accountStatus    AccountStatus      @default(ACTIVE)
+  subscriptionStatus SubscriptionStatus @default(NONE)
+  trialEndsAt      DateTime?
+  invitationCodeId String?
+  invitationCode   InvitationCode?    @relation(fields: [invitationCodeId], references: [id], onDelete: SetNull)
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
   therapistProfile TherapistProfile?
   clients          Client[]
   authSessions     AuthSession[]
   aiRequestLogs    AiRequestLog[]
+}
+
+model InvitationCode {
+  id          String    @id @default(cuid())
+  codeHash    String    @unique
+  label       String?
+  email       String?
+  maxUses     Int       @default(1)
+  usedCount   Int       @default(0)
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  users       User[]
+}
+
+model AccessRequest {
+  id          String              @id @default(cuid())
+  name        String
+  email       String
+  discipline  String?
+  message     String?
+  status      AccessRequestStatus @default(NEW)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  @@index([email])
 }
 
 model AuthSession {

@@ -30,9 +30,9 @@ export async function createSessionNoteAction(
     }
   });
 
-  revalidatePath(`/clients/${clientId}`);
-  revalidatePath(`/clients/${clientId}/sessions`);
-  redirect(`/clients/${clientId}/sessions/${session.id}`);
+  revalidatePath(`/app/clients/${clientId}`);
+  revalidatePath(`/app/clients/${clientId}/sessions`);
+  redirect(`/app/clients/${clientId}/sessions/${session.id}`);
 }
 
 export async function updateSessionNoteAction(
@@ -60,9 +60,9 @@ export async function updateSessionNoteAction(
     }
   });
 
-  revalidatePath(`/clients/${clientId}`);
-  revalidatePath(`/clients/${clientId}/sessions`);
-  revalidatePath(`/clients/${clientId}/sessions/${sessionId}`);
+  revalidatePath(`/app/clients/${clientId}`);
+  revalidatePath(`/app/clients/${clientId}/sessions`);
+  revalidatePath(`/app/clients/${clientId}/sessions/${sessionId}`);
   return { success: "Séance mise à jour" };
 }
 
@@ -71,7 +71,7 @@ export async function deleteSessionAction(clientId: string, sessionId: string): 
   await prisma.therapySession.deleteMany({
     where: { id: sessionId, clientId, therapistId: user.id }
   });
-  revalidatePath(`/clients/${clientId}`);
-  revalidatePath(`/clients/${clientId}/sessions`);
-  redirect(`/clients/${clientId}/sessions`);
+  revalidatePath(`/app/clients/${clientId}`);
+  revalidatePath(`/app/clients/${clientId}/sessions`);
+  redirect(`/app/clients/${clientId}/sessions`);
 }

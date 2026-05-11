@@ -17,13 +17,13 @@ export default async function ClientsPage() {
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-clay">Clients</p>
           <h1 className="mt-2 text-3xl font-semibold text-ink">Dossiers clients</h1>
         </div>
-        <Link href="/clients/new" className="rounded-md bg-ink px-4 py-2.5 text-sm font-semibold text-white">
+        <Link href="/app/clients/new" className="rounded-md bg-ink px-4 py-2.5 text-sm font-semibold text-white">
           Nouveau client
         </Link>
       </div>
       <section className="grid gap-3">
         {clients.map((client) => (
-          <Link key={client.id} href={`/clients/${client.id}`} className="rounded-lg border border-ink/10 bg-paper p-5 shadow-sm transition hover:shadow-soft">
+          <Link key={client.id} href={`/app/clients/${client.id}`} className="rounded-lg border border-ink/10 bg-paper p-5 shadow-sm transition hover:shadow-soft">
             <div className="flex flex-wrap justify-between gap-3">
               <div>
                 <h2 className="font-semibold">{client.firstName || client.lastName ? `${client.firstName ?? ""} ${client.lastName ?? ""}` : "Client sans nom"}</h2>

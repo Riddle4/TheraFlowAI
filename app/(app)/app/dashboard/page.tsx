@@ -28,7 +28,7 @@ export default async function DashboardPage() {
           <h1 className="mt-2 text-3xl font-semibold text-ink">Bonjour {user.name ?? user.email}</h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-ink/60">{aiDisclaimer}</p>
         </div>
-        <Link href="/clients/new" className="rounded-md bg-ink px-4 py-2.5 text-sm font-semibold text-white">
+        <Link href="/app/clients/new" className="rounded-md bg-ink px-4 py-2.5 text-sm font-semibold text-white">
           Nouveau client
         </Link>
       </div>
@@ -37,7 +37,7 @@ export default async function DashboardPage() {
         <section className="rounded-lg border border-clay/25 bg-paper p-5">
           <h2 className="font-semibold">Profil à compléter</h2>
           <p className="mt-1 text-sm text-ink/60">Ajoutez votre discipline, votre cadre et le ton IA souhaité.</p>
-          <Link className="mt-4 inline-flex rounded-md bg-clay px-4 py-2 text-sm font-semibold text-white" href="/settings/profile">
+          <Link className="mt-4 inline-flex rounded-md bg-clay px-4 py-2 text-sm font-semibold text-white" href="/app/settings/profile">
             Compléter mon profil
           </Link>
         </section>
@@ -47,13 +47,13 @@ export default async function DashboardPage() {
         <section className="rounded-lg border border-ink/10 bg-paper p-5 shadow-soft">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold">Clients récents</h2>
-            <Link href="/clients" className="text-sm font-semibold text-sage">
+            <Link href="/app/clients" className="text-sm font-semibold text-sage">
               Voir tout
             </Link>
           </div>
           <div className="grid gap-3">
             {clients.map((client) => (
-              <Link key={client.id} href={`/clients/${client.id}`} className="rounded-md border border-ink/10 p-4 hover:bg-mint/45">
+              <Link key={client.id} href={`/app/clients/${client.id}`} className="rounded-md border border-ink/10 p-4 hover:bg-mint/45">
                 <p className="font-semibold">{client.firstName || client.lastName ? `${client.firstName ?? ""} ${client.lastName ?? ""}` : "Client sans nom"}</p>
                 <p className="text-sm text-ink/55">{client.pseudonym}</p>
               </Link>
@@ -66,7 +66,7 @@ export default async function DashboardPage() {
           <h2 className="mb-4 text-lg font-semibold">Séances récentes</h2>
           <div className="grid gap-3">
             {sessions.map((session) => (
-              <Link key={session.id} href={`/clients/${session.clientId}/sessions/${session.id}`} className="rounded-md border border-ink/10 p-4 hover:bg-mint/45">
+              <Link key={session.id} href={`/app/clients/${session.clientId}/sessions/${session.id}`} className="rounded-md border border-ink/10 p-4 hover:bg-mint/45">
                 <p className="font-semibold">{session.objective ?? "Séance sans objectif"}</p>
                 <p className="text-sm text-ink/55">
                   {session.client.pseudonym} - {session.sessionDate.toLocaleDateString("fr-CH")} - {session.status}
@@ -81,7 +81,7 @@ export default async function DashboardPage() {
       <section className="rounded-lg border border-ink/10 bg-paper p-5">
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-lg font-semibold">Bibliothèque</h2>
-          <Link href="/library" className="text-sm font-semibold text-sage">
+          <Link href="/app/library" className="text-sm font-semibold text-sage">
             Ouvrir
           </Link>
         </div>

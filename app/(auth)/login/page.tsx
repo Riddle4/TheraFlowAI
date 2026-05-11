@@ -22,9 +22,14 @@ export default function LoginPage() {
           <LoginForm />
         </div>
         <p className="mt-6 text-sm text-ink/60">
-          Pas encore de compte ?{" "}
+          Pas encore d'accès ?{" "}
+          <Link className="font-semibold text-sage" href="/request-access">
+            Demander une invitation
+          </Link>
+          <br />
+          Code reçu ?{" "}
           <Link className="font-semibold text-clay" href="/register">
-            Créer un compte
+            Créer mon compte
           </Link>
         </p>
       </section>

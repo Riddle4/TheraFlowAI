@@ -13,6 +13,7 @@
     "prisma:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "seed": "tsx prisma/seed.ts",
+    "invite:create": "tsx scripts/create-invitation.ts",
     "test": "vitest run"
   },
   "dependencies": {

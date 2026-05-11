@@ -33,8 +33,8 @@ export async function createClientAction(_: ActionState, formData: FormData): Pr
     }
   });
 
-  revalidatePath("/clients");
-  redirect(`/clients/${client.id}`);
+  revalidatePath("/app/clients");
+  redirect(`/app/clients/${client.id}`);
 }
 
 export async function updateClientAction(
@@ -52,13 +52,13 @@ export async function updateClientAction(
     data: { ...data, birthDate: parseDate(parsed.data.birthDate) }
   });
 
-  revalidatePath(`/clients/${clientId}`);
+  revalidatePath(`/app/clients/${clientId}`);
   return { success: "Client mis à jour" };
 }
 
 export async function deleteClientAction(clientId: string): Promise<void> {
   const user = await requireUser();
   await prisma.client.deleteMany({ where: { id: clientId, therapistId: user.id } });
-  revalidatePath("/clients");
-  redirect("/clients");
+  revalidatePath("/app/clients");
+  redirect("/app/clients");
 }

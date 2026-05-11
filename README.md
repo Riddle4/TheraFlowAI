@@ -66,6 +66,7 @@ DATABASE_URL="postgresql://..."
 OPENAI_API_KEY="sk-..."
 OPENAI_MODEL="gpt-4o-mini"
 APP_URL="https://votre-domaine"
+ALLOW_PUBLIC_REGISTRATION="false"
 ```
 
 4. Appliquez les migrations Prisma en production :
@@ -81,3 +82,27 @@ npm run build
 ```
 
 Note : GitHub héberge le code. Pour exécuter l'application Next.js en production, utilisez ensuite un hébergeur compatible Node/Next.js comme Vercel, Render, Railway ou Fly.io, avec les mêmes variables d'environnement.
+
+## Accès professionnel et invitations
+
+Par défaut, l'inscription publique est fermée :
+
+```env
+ALLOW_PUBLIC_REGISTRATION="false"
+```
+
+Les visiteurs peuvent demander un accès via `/request-access`. Les demandes sont stockées dans la table `AccessRequest`.
+
+Pour créer un code d'invitation :
+
+```bash
+npm run invite:create
+```
+
+Pour réserver le code à un email :
+
+```bash
+npm run invite:create -- --email=therapeute@example.com --label="Invitation pilote"
+```
+
+Le code est affiché une seule fois dans le terminal et stocké haché en base. Envoyez ce code au thérapeute pour qu'il puisse créer son compte sur `/register`.

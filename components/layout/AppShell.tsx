@@ -3,10 +3,11 @@ import Image from "next/image";
 import { logoutAction } from "@/server/actions/auth";
 
 const nav = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/clients", label: "Clients" },
-  { href: "/library", label: "Bibliothèque" },
-  { href: "/settings/profile", label: "Paramètres" }
+  { href: "/app/dashboard", label: "Dashboard" },
+  { href: "/app/clients", label: "Clients" },
+  { href: "/app/library", label: "Bibliothèque" },
+  { href: "/app/settings/profile", label: "Profil" },
+  { href: "/app/settings/account", label: "Compte" }
 ];
 
 export function AppShell({ children, userName }: { children: React.ReactNode; userName?: string | null }) {
@@ -14,7 +15,7 @@ export function AppShell({ children, userName }: { children: React.ReactNode; us
     <div className="min-h-screen bg-linen">
       <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-ink/10 bg-paper px-5 py-6 lg:block">
         <div className="rounded-lg border border-sage/15 bg-white p-3 shadow-sm">
-          <Link href="/dashboard" className="block" aria-label="TheraFlow AI dashboard">
+          <Link href="/app/dashboard" className="block" aria-label="TheraFlow AI dashboard">
             <Image
               src="/brand/theraflow-ai.png"
               alt="TheraFlow AI"
@@ -48,7 +49,7 @@ export function AppShell({ children, userName }: { children: React.ReactNode; us
         <header className="sticky top-0 z-10 border-b border-ink/10 bg-paper/90 px-5 py-4 backdrop-blur lg:hidden">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <Link href="/dashboard" className="font-semibold">
+              <Link href="/app/dashboard" className="font-semibold">
                 TheraFlow AI
               </Link>
               <p className="text-[11px] font-medium text-sage/80">Powered by Cosmo</p>

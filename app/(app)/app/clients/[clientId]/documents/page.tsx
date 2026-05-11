@@ -23,7 +23,7 @@ export default async function ClientDocumentsPage({ params }: { params: Promise<
   return (
     <div className="grid gap-6">
       <div>
-        <Link href={`/clients/${client.id}`} className="text-sm font-semibold text-sage">
+        <Link href={`/app/clients/${client.id}`} className="text-sm font-semibold text-sage">
           Retour à la fiche
         </Link>
         <h1 className="mt-2 text-3xl font-semibold text-ink">Documents</h1>

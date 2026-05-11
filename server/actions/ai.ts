@@ -93,7 +93,7 @@ export async function generateSessionPlanAction(
     await prisma.aiRequestLog.create({
       data: { therapistId: user.id, clientId, type: "SESSION_PLAN", status: "SUCCESS", model: result.model }
     });
-    revalidatePath(`/clients/${clientId}/ai-session`);
+    revalidatePath(`/app/clients/${clientId}/ai-session`);
     return { success: "Proposition IA générée et sauvegardée" };
   } catch (error) {
     await prisma.aiRequestLog.create({
@@ -160,8 +160,8 @@ export async function structurePostSessionNoteAction(
     await prisma.aiRequestLog.create({
       data: { therapistId: user.id, clientId, type: "STRUCTURED_NOTE", status: "SUCCESS", model: result.model }
     });
-    revalidatePath(`/clients/${clientId}`);
-    revalidatePath(`/clients/${clientId}/sessions`);
+    revalidatePath(`/app/clients/${clientId}`);
+    revalidatePath(`/app/clients/${clientId}/sessions`);
     return { success: existingSessionId ? "Note IA ajoutée à la séance" : "Note structurée créée dans l'historique" };
   } catch (error) {
     await prisma.aiRequestLog.create({

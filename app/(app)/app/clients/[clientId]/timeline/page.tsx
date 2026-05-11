@@ -35,7 +35,7 @@ export default async function ClientTimelinePage({ params }: { params: Promise<{
     <div className="grid gap-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <Link href={`/clients/${client.id}`} className="text-sm font-semibold text-sage">
+          <Link href={`/app/clients/${client.id}`} className="text-sm font-semibold text-sage">
             Retour à la fiche
           </Link>
           <h1 className="mt-2 text-3xl font-semibold text-ink">Timeline</h1>
@@ -43,7 +43,7 @@ export default async function ClientTimelinePage({ params }: { params: Promise<{
             Séances, propositions IA et documents utiles pour {client.pseudonym}.
           </p>
         </div>
-        <Link href={`/clients/${client.id}/sessions`} className="rounded-md bg-ink px-4 py-2.5 text-sm font-semibold text-white">
+        <Link href={`/app/clients/${client.id}/sessions`} className="rounded-md bg-ink px-4 py-2.5 text-sm font-semibold text-white">
           Nouvelle séance
         </Link>
       </div>
@@ -69,7 +69,7 @@ export default async function ClientTimelinePage({ params }: { params: Promise<{
                     </p>
                   </div>
                   <Link
-                    href={`/clients/${client.id}/ai-session`}
+                    href={`/app/clients/${client.id}/ai-session`}
                     className="rounded-md border border-sage/25 px-3 py-1.5 text-xs font-semibold text-sage hover:bg-mint"
                   >
                     Ouvrir l'IA

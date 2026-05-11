@@ -6,7 +6,8 @@ const optionalShortText = z.string().trim().max(255).optional().or(z.literal("")
 export const registerSchema = z.object({
   name: z.string().trim().min(2, "Nom requis").max(120),
   email: z.string().trim().email("Email invalide").max(255),
-  password: z.string().min(10, "Le mot de passe doit contenir au moins 10 caractères")
+  password: z.string().min(10, "Le mot de passe doit contenir au moins 10 caractères"),
+  invitationCode: z.string().trim().max(120).optional().or(z.literal(""))
 });
 
 export const loginSchema = z.object({
@@ -93,6 +94,13 @@ export const aiSessionPlanSchema = z.object({
 export const structuredNoteSchema = z.object({
   sessionId: z.string().optional().or(z.literal("")),
   rawNote: z.string().trim().min(10, "Ajoutez une note brute suffisante").max(8000)
+});
+
+export const accessRequestSchema = z.object({
+  name: z.string().trim().min(2, "Nom requis").max(120),
+  email: z.string().trim().email("Email invalide").max(255),
+  discipline: z.string().trim().max(160).optional().or(z.literal("")),
+  message: z.string().trim().max(2000).optional().or(z.literal(""))
 });
 
 export function emptyToNull<T extends Record<string, unknown>>(data: T): T {

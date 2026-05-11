@@ -24,7 +24,7 @@ export async function upsertAnamnesisAction(
     update: emptyToNull(parsed.data)
   });
 
-  revalidatePath(`/clients/${clientId}`);
-  revalidatePath(`/clients/${clientId}/anamnesis`);
+  revalidatePath(`/app/clients/${clientId}`);
+  revalidatePath(`/app/clients/${clientId}/anamnesis`);
   return { success: "Anamnèse enregistrée" };
 }

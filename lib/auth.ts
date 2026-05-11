@@ -66,5 +66,6 @@ export async function getCurrentUser() {
 export async function requireUser() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
+  if (user.accountStatus === "SUSPENDED") redirect("/login?error=account_suspended");
   return user;
 }

@@ -25,7 +25,7 @@ export default async function SessionDetailPage({
     <div className="grid gap-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <Link href={`/clients/${clientId}/sessions`} className="text-sm font-semibold text-sage">
+          <Link href={`/app/clients/${clientId}/sessions`} className="text-sm font-semibold text-sage">
             Retour aux séances
           </Link>
           <h1 className="mt-2 text-3xl font-semibold text-ink">

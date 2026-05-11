@@ -18,7 +18,7 @@ export default async function SessionsPage({ params }: { params: Promise<{ clien
   return (
     <div className="grid gap-6">
       <div>
-        <Link href={`/clients/${client.id}`} className="text-sm font-semibold text-clay">
+        <Link href={`/app/clients/${client.id}`} className="text-sm font-semibold text-clay">
           Retour à la fiche
         </Link>
         <h1 className="mt-2 text-3xl font-semibold text-ink">Séances</h1>

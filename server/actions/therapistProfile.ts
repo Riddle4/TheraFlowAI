@@ -31,6 +31,6 @@ export async function upsertTherapistProfileAction(
     }
   });
 
-  revalidatePath("/settings/profile");
-  redirect("/dashboard");
+  revalidatePath("/app/settings/profile");
+  redirect("/app/dashboard");
 }
