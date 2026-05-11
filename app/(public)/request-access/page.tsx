@@ -24,11 +24,6 @@ export default function RequestAccessPage() {
           <p className="mt-5 max-w-2xl text-base leading-8 text-ink/65">
             L'inscription est contrôlée afin de protéger l'environnement de travail et de réserver l'outil aux thérapeutes et praticiens accompagnés.
           </p>
-          <div className="mt-8 grid gap-3 text-sm leading-6 text-ink/65">
-            <p className="rounded-md bg-mint/60 p-3">Stockage des données en Europe via une base PostgreSQL managée.</p>
-            <p className="rounded-md bg-mint/60 p-3">Pseudonymisation du contexte transmis à l'IA.</p>
-            <p className="rounded-md bg-mint/60 p-3">Aucun portail client dans le MVP, accès thérapeute uniquement.</p>
-          </div>
         </section>
 
         <section className="rounded-lg border border-ink/10 bg-paper p-6 shadow-soft">

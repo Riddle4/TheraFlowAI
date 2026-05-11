@@ -67,6 +67,9 @@ OPENAI_API_KEY="sk-..."
 OPENAI_MODEL="gpt-4o-mini"
 APP_URL="https://votre-domaine"
 ALLOW_PUBLIC_REGISTRATION="false"
+RESEND_API_KEY="re_..."
+ACCESS_REQUEST_TO_EMAIL="info@cosmoengine.ai"
+EMAIL_FROM="TheraFlow AI <notifications@votre-domaine>"
 ```
 
 4. Appliquez les migrations Prisma en production :
@@ -92,6 +95,8 @@ ALLOW_PUBLIC_REGISTRATION="false"
 ```
 
 Les visiteurs peuvent demander un accès via `/request-access`. Les demandes sont stockées dans la table `AccessRequest`.
+
+Si `RESEND_API_KEY` est configuré, chaque demande d'accès envoie aussi un email récapitulatif à `ACCESS_REQUEST_TO_EMAIL`. Configurez `EMAIL_FROM` avec une adresse validée dans Resend pour la production.
 
 Pour créer un code d'invitation :
 

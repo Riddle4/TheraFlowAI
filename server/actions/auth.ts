@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { createSession, destroySession } from "@/lib/auth";
+import { sendAccessRequestEmail } from "@/lib/email";
 import { hashInvitationCode, publicRegistrationEnabled } from "@/lib/invitations";
 import { hashPassword, verifyPassword } from "@/lib/password";
 import { accessRequestSchema, loginSchema, registerSchema } from "@/lib/validators";
@@ -85,7 +86,7 @@ export async function requestAccessAction(_: ActionState, formData: FormData): P
   const parsed = accessRequestSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "Données invalides" };
 
-  await prisma.accessRequest.create({
+  const accessRequest = await prisma.accessRequest.create({
     data: {
       name: parsed.data.name,
       email: parsed.data.email.toLowerCase(),
@@ -93,6 +94,22 @@ export async function requestAccessAction(_: ActionState, formData: FormData): P
       message: parsed.data.message || null
     }
   });
+
+  try {
+    await sendAccessRequestEmail({
+      name: accessRequest.name,
+      email: accessRequest.email,
+      discipline: accessRequest.discipline,
+      message: accessRequest.message,
+      createdAt: accessRequest.createdAt
+    });
+  } catch (error) {
+    console.error("Access request email failed", error);
+    return {
+      success:
+        "Demande enregistrée. L'email de notification n'a pas pu être envoyé automatiquement, mais votre demande est bien conservée."
+    };
+  }
 
   return { success: "Demande reçue. Nous reviendrons vers vous avec les prochaines étapes." };
 }
