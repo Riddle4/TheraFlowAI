@@ -47,7 +47,7 @@ function isWriteAccessActive(
 
   if (user.subscriptionPlan === "TRIAL") {
     const trialEnd = effectiveTrialEnd(user);
-    if (user.subscriptionStatus !== "TRIALING" && user.subscriptionStatus !== "ACTIVE") {
+    if (user.subscriptionStatus === "CANCELED" || user.subscriptionStatus === "PAST_DUE") {
       return { active: false, reason: "Votre période d'essai n'est pas active." };
     }
     if (trialEnd <= now) {
@@ -94,10 +94,12 @@ export async function getSubscriptionOverview(therapistId: string) {
 
   const limits = limitsByPlan[user.subscriptionPlan];
   const access = isWriteAccessActive(user);
+  const displayStatus: SubscriptionStatus =
+    user.subscriptionPlan === "TRIAL" && user.subscriptionStatus === "NONE" && access.active ? "TRIALING" : user.subscriptionStatus;
 
   return {
     plan: user.subscriptionPlan,
-    status: user.subscriptionStatus,
+    status: displayStatus,
     isWriteAccessActive: access.active,
     inactiveReason: access.reason ?? null,
     trialEndsAt: user.subscriptionPlan === "TRIAL" ? effectiveTrialEnd(user) : null,
