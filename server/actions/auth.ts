@@ -45,8 +45,9 @@ export async function registerAction(_: ActionState, formData: FormData): Promis
         name: parsed.data.name,
         passwordHash: hashPassword(parsed.data.password),
         invitationCodeId,
+        subscriptionPlan: "TRIAL",
         subscriptionStatus: "TRIALING",
-        trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
+        trialEndsAt: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)
       }
     });
 

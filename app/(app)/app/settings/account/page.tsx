@@ -1,19 +1,14 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
+import { getSubscriptionOverview, planLabel, subscriptionStatusLabel } from "@/lib/subscription";
 
-function subscriptionLabel(status: string) {
-  const labels: Record<string, string> = {
-    NONE: "Aucun abonnement",
-    TRIALING: "Période d'essai",
-    ACTIVE: "Actif",
-    PAST_DUE: "Paiement en retard",
-    CANCELED: "Annulé"
-  };
-  return labels[status] ?? status;
+function usageLabel(used: number, limit: number | null) {
+  return limit === null ? `${used} / illimité` : `${used} / ${limit}`;
 }
 
 export default async function AccountPage() {
   const user = await requireUser();
+  const subscription = await getSubscriptionOverview(user.id);
 
   return (
     <div className="grid gap-6">
@@ -48,17 +43,31 @@ export default async function AccountPage() {
           <h2 className="text-lg font-semibold">Abonnement</h2>
           <dl className="mt-4 grid gap-3 text-sm leading-6 text-ink/70">
             <div>
+              <dt className="font-semibold text-ink">Offre</dt>
+              <dd>{planLabel(subscription.plan)}</dd>
+            </div>
+            <div>
               <dt className="font-semibold text-ink">Statut</dt>
-              <dd>{subscriptionLabel(user.subscriptionStatus)}</dd>
+              <dd>{subscriptionStatusLabel(subscription.status)}</dd>
             </div>
             <div>
               <dt className="font-semibold text-ink">Essai</dt>
-              <dd>{user.trialEndsAt ? `Jusqu'au ${user.trialEndsAt.toLocaleDateString("fr-CH")}` : "Non configuré"}</dd>
+              <dd>{subscription.trialEndsAt ? `Jusqu'au ${subscription.trialEndsAt.toLocaleDateString("fr-CH")}` : "Non configuré"}</dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-ink">Clients actifs</dt>
+              <dd>{usageLabel(subscription.clients.used, subscription.clients.limit)}</dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-ink">Séances ce mois-ci</dt>
+              <dd>{usageLabel(subscription.monthlySessions.used, subscription.monthlySessions.limit)}</dd>
             </div>
           </dl>
-          <p className="mt-5 rounded-md bg-mint/60 p-3 text-sm leading-6 text-ink/65">
-            La gestion Stripe sera ajoutée dans une prochaine étape: checkout, portail client et webhooks d'abonnement.
-          </p>
+          {!subscription.isWriteAccessActive ? (
+            <p className="mt-5 rounded-md bg-clay/10 p-3 text-sm leading-6 text-clay">
+              {subscription.inactiveReason} Les données existantes restent consultables.
+            </p>
+          ) : null}
         </section>
       </div>
 

@@ -7,6 +7,7 @@ import { cleanAiText } from "@/lib/aiText";
 import { aiSessionPlanSchema, structuredNoteSchema } from "@/lib/validators";
 import { callOpenAI } from "@/lib/openai";
 import { prisma } from "@/lib/db";
+import { assertCanUseFeature, SubscriptionLimitError } from "@/lib/subscription";
 import type { ActionState } from "./auth";
 
 const globalSystem = [
@@ -50,6 +51,12 @@ export async function generateSessionPlanAction(
   const user = await requireUser();
   const parsed = aiSessionPlanSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "Données invalides" };
+  try {
+    await assertCanUseFeature(user.id, "GENERATE_AI");
+  } catch (error) {
+    if (error instanceof SubscriptionLimitError) return { error: error.message };
+    throw error;
+  }
 
   const aiContext = await getAiContext(clientId, user.id);
   if (!aiContext) return { error: "Client introuvable" };
@@ -117,6 +124,16 @@ export async function structurePostSessionNoteAction(
   const user = await requireUser();
   const parsed = structuredNoteSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "Données invalides" };
+  const existingSessionId = parsed.data.sessionId || null;
+  try {
+    await assertCanUseFeature(user.id, "GENERATE_AI");
+    if (!existingSessionId) {
+      await assertCanUseFeature(user.id, "CREATE_SESSION");
+    }
+  } catch (error) {
+    if (error instanceof SubscriptionLimitError) return { error: error.message };
+    throw error;
+  }
 
   const aiContext = await getAiContext(clientId, user.id);
   if (!aiContext) return { error: "Client introuvable" };
@@ -135,7 +152,6 @@ export async function structurePostSessionNoteAction(
   try {
     const result = await callOpenAI({ system: globalSystem, user: userPrompt });
     const structuredNote = cleanAiText(result.content);
-    const existingSessionId = parsed.data.sessionId || null;
     if (existingSessionId) {
       const session = await prisma.therapySession.findFirst({
         where: { id: existingSessionId, clientId, therapistId: user.id }

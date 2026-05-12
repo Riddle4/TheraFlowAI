@@ -36,6 +36,12 @@ enum SubscriptionStatus {
   CANCELED
 }
 
+enum SubscriptionPlan {
+  TRIAL
+  ESSENTIAL
+  PRO
+}
+
 enum AccessRequestStatus {
   NEW
   CONTACTED
@@ -49,6 +55,7 @@ model User {
   name             String?
   passwordHash     String
   accountStatus    AccountStatus      @default(ACTIVE)
+  subscriptionPlan SubscriptionPlan    @default(TRIAL)
   subscriptionStatus SubscriptionStatus @default(NONE)
   trialEndsAt      DateTime?
   invitationCodeId String?

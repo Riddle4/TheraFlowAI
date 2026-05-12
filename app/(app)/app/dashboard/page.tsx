@@ -2,10 +2,15 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { aiDisclaimer } from "@/lib/constants";
 import { prisma } from "@/lib/db";
+import { getSubscriptionOverview, planLabel } from "@/lib/subscription";
+
+function usageLabel(used: number, limit: number | null) {
+  return limit === null ? `${used} / illimité` : `${used} / ${limit}`;
+}
 
 export default async function DashboardPage() {
   const user = await requireUser();
-  const [clients, sessions, profile] = await Promise.all([
+  const [clients, sessions, profile, subscription] = await Promise.all([
     prisma.client.findMany({
       where: { therapistId: user.id },
       orderBy: { updatedAt: "desc" },
@@ -17,7 +22,8 @@ export default async function DashboardPage() {
       take: 5,
       include: { client: true }
     }),
-    prisma.therapistProfile.findUnique({ where: { therapistId: user.id } })
+    prisma.therapistProfile.findUnique({ where: { therapistId: user.id } }),
+    getSubscriptionOverview(user.id)
   ]);
 
   return (
@@ -32,6 +38,31 @@ export default async function DashboardPage() {
           Nouveau client
         </Link>
       </div>
+
+      <section className="grid gap-3 rounded-lg border border-sage/20 bg-paper p-4 shadow-soft md:grid-cols-3">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-sage">Offre</p>
+          <p className="mt-1 font-semibold text-ink">{planLabel(subscription.plan)}</p>
+          {subscription.trialEndsAt ? (
+            <p className="text-sm text-ink/55">Essai jusqu'au {subscription.trialEndsAt.toLocaleDateString("fr-CH")}</p>
+          ) : null}
+        </div>
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-sage">Clients actifs</p>
+          <p className="mt-1 font-semibold text-ink">{usageLabel(subscription.clients.used, subscription.clients.limit)}</p>
+        </div>
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-sage">Séances ce mois-ci</p>
+          <p className="mt-1 font-semibold text-ink">
+            {usageLabel(subscription.monthlySessions.used, subscription.monthlySessions.limit)}
+          </p>
+        </div>
+        {!subscription.isWriteAccessActive ? (
+          <p className="rounded-md bg-clay/10 p-3 text-sm leading-6 text-clay md:col-span-3">
+            {subscription.inactiveReason} Vous pouvez encore consulter vos données existantes.
+          </p>
+        ) : null}
+      </section>
 
       {!profile ? (
         <section className="rounded-lg border border-clay/25 bg-paper p-5">

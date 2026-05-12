@@ -111,3 +111,21 @@ npm run invite:create -- --email=therapeute@example.com --label="Invitation pilo
 ```
 
 Le code est affiché une seule fois dans le terminal et stocké haché en base. Envoyez ce code au thérapeute pour qu'il puisse créer son compte sur `/register`.
+
+## Plans et limites d'usage
+
+Les limites sont vérifiées côté serveur avant les écritures sensibles :
+
+- Essai gratuit : accès en écriture pendant 15 jours.
+- TheraFlow Essentiel : 25 clients enregistrés et 35 nouvelles séances par mois.
+- TheraFlow Pro : clients et séances illimités.
+
+Les données existantes restent consultables même si l'essai expire ou si l'abonnement n'est plus actif.
+
+Pour modifier manuellement le plan d'un utilisateur :
+
+```bash
+npm run user:plan -- --email=therapeute@example.com --plan=ESSENTIAL
+npm run user:plan -- --email=therapeute@example.com --plan=PRO
+npm run user:plan -- --email=therapeute@example.com --plan=TRIAL --trialDays=15
+```

@@ -14,6 +14,7 @@
     "prisma:studio": "prisma studio",
     "seed": "tsx prisma/seed.ts",
     "invite:create": "tsx scripts/create-invitation.ts",
+    "user:plan": "tsx scripts/set-user-plan.ts",
     "test": "vitest run"
   },
   "dependencies": {

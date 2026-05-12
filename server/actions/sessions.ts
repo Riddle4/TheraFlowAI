@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { assertCanUseFeature, SubscriptionLimitError } from "@/lib/subscription";
 import { emptyToNull, sessionSchema } from "@/lib/validators";
 import type { ActionState } from "./auth";
 
@@ -18,6 +19,12 @@ export async function createSessionNoteAction(
 
   const parsed = sessionSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "Données invalides" };
+  try {
+    await assertCanUseFeature(user.id, "CREATE_SESSION");
+  } catch (error) {
+    if (error instanceof SubscriptionLimitError) return { error: error.message };
+    throw error;
+  }
 
   const data = emptyToNull(parsed.data);
   const session = await prisma.therapySession.create({
