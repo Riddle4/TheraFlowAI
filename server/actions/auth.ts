@@ -91,7 +91,12 @@ export async function requestAccessAction(_: ActionState, formData: FormData): P
       name: parsed.data.name,
       email: parsed.data.email.toLowerCase(),
       discipline: parsed.data.discipline || null,
-      message: parsed.data.message || null
+      message: [
+        parsed.data.selectedPlan ? `Offre souhaitée: ${parsed.data.selectedPlan}` : null,
+        parsed.data.message || null
+      ]
+        .filter(Boolean)
+        .join("\n\n") || null
     }
   });
 
@@ -99,6 +104,7 @@ export async function requestAccessAction(_: ActionState, formData: FormData): P
     await sendAccessRequestEmail({
       name: accessRequest.name,
       email: accessRequest.email,
+      selectedPlan: parsed.data.selectedPlan || "Non renseignée",
       discipline: accessRequest.discipline,
       message: accessRequest.message,
       createdAt: accessRequest.createdAt

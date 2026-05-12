@@ -2,7 +2,16 @@ import Link from "next/link";
 import Image from "next/image";
 import { RequestAccessForm } from "@/components/ui/AuthForms";
 
-export default function RequestAccessPage() {
+const allowedPlans = ["Essai gratuit", "TheraFlow Essentiel", "TheraFlow Pro"];
+
+export default async function RequestAccessPage({
+  searchParams
+}: {
+  searchParams: Promise<{ plan?: string }>;
+}) {
+  const { plan } = await searchParams;
+  const selectedPlan = plan && allowedPlans.includes(plan) ? plan : "Essai gratuit";
+
   return (
     <main className="min-h-screen bg-linen px-5 py-10">
       <div className="mx-auto grid min-h-[calc(100vh-5rem)] max-w-6xl items-center gap-10 lg:grid-cols-[1fr_28rem]">
@@ -32,7 +41,7 @@ export default function RequestAccessPage() {
             Nous vous enverrons un code d'invitation si votre demande correspond au cadre du produit.
           </p>
           <div className="mt-6">
-            <RequestAccessForm />
+            <RequestAccessForm selectedPlan={selectedPlan} />
           </div>
           <p className="mt-5 text-sm text-ink/60">
             Vous avez déjà un compte ?{" "}

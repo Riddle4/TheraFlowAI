@@ -99,6 +99,7 @@ export const structuredNoteSchema = z.object({
 export const accessRequestSchema = z.object({
   name: z.string().trim().min(2, "Nom requis").max(120),
   email: z.string().trim().email("Email invalide").max(255),
+  selectedPlan: z.string().trim().max(120).optional().or(z.literal("")),
   discipline: z.string().trim().max(160).optional().or(z.literal("")),
   message: z.string().trim().max(2000).optional().or(z.literal(""))
 });

@@ -3,6 +3,7 @@ import "server-only";
 type AccessRequestEmailInput = {
   name: string;
   email: string;
+  selectedPlan?: string | null;
   discipline?: string | null;
   message?: string | null;
   createdAt: Date;
@@ -26,6 +27,7 @@ export async function sendAccessRequestEmail(input: AccessRequestEmailInput) {
   }
 
   const appUrl = process.env.APP_URL ?? "TheraFlow AI";
+  const selectedPlan = input.selectedPlan || "Non renseignée";
   const discipline = input.discipline || "Non renseignée";
   const message = input.message || "Aucun message";
 
@@ -34,6 +36,7 @@ export async function sendAccessRequestEmail(input: AccessRequestEmailInput) {
     "",
     `Nom: ${input.name}`,
     `Email: ${input.email}`,
+    `Offre souhaitée: ${selectedPlan}`,
     `Discipline: ${discipline}`,
     `Date: ${input.createdAt.toLocaleString("fr-CH")}`,
     "",
@@ -48,6 +51,7 @@ export async function sendAccessRequestEmail(input: AccessRequestEmailInput) {
       <h1>Nouvelle demande d'accès TheraFlow AI</h1>
       <p><strong>Nom:</strong> ${escapeHtml(input.name)}</p>
       <p><strong>Email:</strong> ${escapeHtml(input.email)}</p>
+      <p><strong>Offre souhaitée:</strong> ${escapeHtml(selectedPlan)}</p>
       <p><strong>Discipline:</strong> ${escapeHtml(discipline)}</p>
       <p><strong>Date:</strong> ${escapeHtml(input.createdAt.toLocaleString("fr-CH"))}</p>
       <h2>Message</h2>

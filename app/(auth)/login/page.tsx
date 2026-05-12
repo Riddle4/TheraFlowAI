@@ -6,6 +6,9 @@ export default function LoginPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-linen px-5 py-12">
       <section className="w-full max-w-md rounded-lg border border-ink/10 bg-paper p-8 shadow-soft">
+        <Link href="/" className="mb-5 inline-flex text-sm font-semibold text-sage">
+          Retour à l'accueil
+        </Link>
         <div className="mb-7 flex justify-center">
           <Image
             src="/brand/theraflow-ai.png"

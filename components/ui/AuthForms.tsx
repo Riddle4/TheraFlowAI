@@ -35,13 +35,25 @@ export function RegisterForm({ requireInvitation = true }: { requireInvitation?:
   );
 }
 
-export function RequestAccessForm() {
+export function RequestAccessForm({ selectedPlan }: { selectedPlan?: string }) {
   const [state, action] = useActionState(requestAccessAction, initialState);
   return (
     <form action={action} className="grid gap-4">
       <ActionMessage state={state} />
       <TextInput label="Nom professionnel" name="name" required />
       <TextInput label="Email" name="email" type="email" required />
+      <label className="grid gap-1.5 text-sm font-medium text-ink/80">
+        Offre souhaitée
+        <select
+          className="focus-ring rounded-md border border-ink/15 bg-white px-3 py-2.5 text-ink shadow-sm"
+          name="selectedPlan"
+          defaultValue={selectedPlan ?? "Essai gratuit"}
+        >
+          <option>Essai gratuit</option>
+          <option>TheraFlow Essentiel</option>
+          <option>TheraFlow Pro</option>
+        </select>
+      </label>
       <TextInput label="Discipline principale" name="discipline" />
       <TextArea
         label="Message"
