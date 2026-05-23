@@ -2,10 +2,20 @@
 
 import { deleteSessionAction } from "@/server/actions/sessions";
 
-export function DeleteSessionButton({ clientId, sessionId }: { clientId: string; sessionId: string }) {
+export function DeleteSessionButton({
+  clientId,
+  sessionId,
+  compact = false
+}: {
+  clientId: string;
+  sessionId: string;
+  compact?: boolean;
+}) {
   return (
     <button
-      className="rounded-md border border-red-200 px-4 py-2.5 text-sm font-semibold text-red-700 hover:bg-red-50"
+      className={`rounded-md border border-red-200 font-semibold text-red-700 hover:bg-red-50 ${
+        compact ? "px-3 py-1.5 text-xs" : "px-4 py-2.5 text-sm"
+      }`}
       onClick={() => {
         if (confirm("Supprimer cette séance ?")) {
           void deleteSessionAction(clientId, sessionId);

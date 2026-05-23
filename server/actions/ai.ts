@@ -1,10 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { buildAnonymizedClientContext, redactSensitiveText } from "@/lib/anonymization";
 import { cleanAiText } from "@/lib/aiText";
-import { aiSessionPlanSchema, structuredNoteSchema } from "@/lib/validators";
+import { aiSessionPlanSchema } from "@/lib/validators";
 import { callOpenAI } from "@/lib/openai";
 import { prisma } from "@/lib/db";
 import { assertCanUseFeature, SubscriptionLimitError } from "@/lib/subscription";
@@ -12,7 +13,7 @@ import type { ActionState } from "./auth";
 
 const globalSystem = [
   "Tu es TheraFlow AI, un assistant professionnel pour thérapeutes.",
-  "Tu aides à préparer, structurer et synthétiser des séances sans remplacer le thérapeute.",
+  "Tu aides à préparer des séances personnalisées sans remplacer le thérapeute.",
   "Tu ne poses pas de diagnostic médical, tu ne prescris pas de traitement et tu ne recommandes jamais d'arrêter un traitement médical.",
   "Tu proposes des pistes à valider par le professionnel selon sa formation, son cadre et son jugement.",
   "Ajoute une section Point de vigilance en cas de symptômes graves, urgence médicale, idées suicidaires, violence, abus, trouble psychiatrique sévère, interaction plantes/médicaments ou demande hors cadre.",
@@ -116,79 +117,43 @@ export async function generateSessionPlanAction(
   }
 }
 
-export async function structurePostSessionNoteAction(
-  clientId: string,
-  _: ActionState,
-  formData: FormData
-): Promise<ActionState> {
+export async function saveAiPlanToTimelineAction(clientId: string, planId: string): Promise<void> {
   const user = await requireUser();
-  const parsed = structuredNoteSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "Données invalides" };
-  const existingSessionId = parsed.data.sessionId || null;
   try {
-    await assertCanUseFeature(user.id, "GENERATE_AI");
-    if (!existingSessionId) {
-      await assertCanUseFeature(user.id, "CREATE_SESSION");
-    }
+    await assertCanUseFeature(user.id, "CREATE_SESSION");
   } catch (error) {
-    if (error instanceof SubscriptionLimitError) return { error: error.message };
+    if (error instanceof SubscriptionLimitError) {
+      throw new Error(error.message);
+    }
     throw error;
   }
 
-  const aiContext = await getAiContext(clientId, user.id);
-  if (!aiContext) return { error: "Client introuvable" };
+  const plan = await prisma.aiGeneratedSessionPlan.findFirst({
+    where: { id: planId, clientId, therapistId: user.id }
+  });
+  if (!plan) throw new Error("Proposition IA introuvable.");
 
-  const rawNote = redactSensitiveText(parsed.data.rawNote, aiContext.client) ?? "";
-  const userPrompt = [
-    "Contexte pseudonymisé du client:",
-    aiContext.context,
-    "",
-    "Note brute du thérapeute, déjà filtrée:",
-    rawNote,
-    "",
-    "Structure la note en: résumé, interventions, réactions, éléments importants, hypothèses à confirmer, points de vigilance, exercice donné, prochaine étape. N'ajoute aucune information absente."
-  ].join("\n");
-
-  try {
-    const result = await callOpenAI({ system: globalSystem, user: userPrompt });
-    const structuredNote = cleanAiText(result.content);
-    if (existingSessionId) {
-      const session = await prisma.therapySession.findFirst({
-        where: { id: existingSessionId, clientId, therapistId: user.id }
-      });
-      if (!session) return { error: "Séance à mettre à jour introuvable" };
-      await prisma.therapySession.update({
-        where: { id: session.id },
-        data: { rawNote, structuredNote }
-      });
-    } else {
-      await prisma.therapySession.create({
-        data: {
-          clientId,
-          therapistId: user.id,
-          sessionDate: new Date(),
-          rawNote,
-          structuredNote,
-          status: "DRAFT"
-        }
-      });
-    }
-    await prisma.aiRequestLog.create({
-      data: { therapistId: user.id, clientId, type: "STRUCTURED_NOTE", status: "SUCCESS", model: result.model }
-    });
-    revalidatePath(`/app/clients/${clientId}`);
-    revalidatePath(`/app/clients/${clientId}/sessions`);
-    return { success: existingSessionId ? "Note IA ajoutée à la séance" : "Note structurée créée dans l'historique" };
-  } catch (error) {
-    await prisma.aiRequestLog.create({
+  await prisma.$transaction(async (tx) => {
+    await tx.therapySession.create({
       data: {
-        therapistId: user.id,
         clientId,
-        type: "STRUCTURED_NOTE",
-        status: "ERROR",
-        error: error instanceof Error ? error.message.slice(0, 180) : "Erreur inconnue"
+        therapistId: user.id,
+        sessionDate: new Date(),
+        durationMinutes: plan.durationMinutes,
+        sessionType: plan.sessionType,
+        objective: plan.dayObjective,
+        performedInterventions: cleanAiText(plan.generatedContent),
+        aiSessionPlan: cleanAiText(plan.generatedContent),
+        status: "DRAFT"
       }
     });
-    return { error: error instanceof Error ? error.message : "Erreur IA" };
-  }
+    await tx.aiGeneratedSessionPlan.delete({
+      where: { id: plan.id }
+    });
+  });
+
+  revalidatePath(`/app/clients/${clientId}`);
+  revalidatePath(`/app/clients/${clientId}/timeline`);
+  revalidatePath(`/app/clients/${clientId}/ai-session`);
+  redirect(`/app/clients/${clientId}/timeline`);
 }

@@ -2,8 +2,8 @@ import Link from "next/link";
 
 const tabs = [
   { label: "Vue d'ensemble", segment: "" },
-  { label: "Timeline", segment: "timeline" },
   { label: "Anamnèse", segment: "anamnesis" },
+  { label: "Timeline", segment: "timeline" },
   { label: "IA", segment: "ai-session" },
   { label: "Documents", segment: "documents" }
 ];

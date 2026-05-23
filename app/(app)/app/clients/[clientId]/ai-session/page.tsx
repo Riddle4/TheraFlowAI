@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AiSessionPlanForm, StructuredNoteForm } from "@/components/ai/AiForms";
+import { AiSessionPlanForm } from "@/components/ai/AiForms";
+import { SaveAiPlanButton } from "@/components/ai/SaveAiPlanButton";
 import { ClientTabs } from "@/components/clients/ClientTabs";
 import { cleanAiText } from "@/lib/aiText";
 import { requireUser } from "@/lib/auth";
@@ -14,8 +15,7 @@ export default async function AiSessionPage({ params }: { params: Promise<{ clie
     prisma.client.findFirst({
       where: { id: clientId, therapistId: user.id },
       include: {
-        aiPlans: { orderBy: { createdAt: "desc" }, take: 5 },
-        sessions: { orderBy: { sessionDate: "desc" }, take: 12 }
+        aiPlans: { orderBy: { createdAt: "desc" }, take: 1 }
       }
     }),
     prisma.therapistProfile.findUnique({ where: { therapistId: user.id } })
@@ -41,29 +41,37 @@ export default async function AiSessionPage({ params }: { params: Promise<{ clie
         <p className="mt-1">{riskReminder}</p>
       </section>
 
-      <div className="grid gap-5 xl:grid-cols-2">
-        <section className="rounded-lg border border-ink/10 bg-paper p-5 shadow-soft">
-          <h2 className="mb-4 text-lg font-semibold">Préparer une séance IA</h2>
-          <AiSessionPlanForm clientId={client.id} defaultDuration={profile?.defaultSessionDuration} />
-        </section>
-        <section className="rounded-lg border border-ink/10 bg-paper p-5 shadow-soft">
-          <h2 className="mb-4 text-lg font-semibold">Note après séance assistée</h2>
-          <StructuredNoteForm clientId={client.id} sessions={client.sessions} />
-        </section>
-      </div>
+      <section className="rounded-lg border border-ink/10 bg-paper p-5 shadow-soft">
+        <h2 className="mb-4 text-lg font-semibold">Préparer une séance IA</h2>
+        <AiSessionPlanForm clientId={client.id} defaultDuration={profile?.defaultSessionDuration} />
+      </section>
 
       <section className="rounded-lg border border-ink/10 bg-paper p-5 shadow-soft">
-        <h2 className="mb-4 text-lg font-semibold">Propositions sauvegardées</h2>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold">Dernière proposition générée</h2>
+            <p className="mt-1 text-sm text-ink/60">
+              Sauvegardez-la dans la Timeline pour l'utiliser pendant la séance. Elle disparaîtra ensuite de cette vue.
+            </p>
+          </div>
+        </div>
         <div className="grid gap-4">
           {client.aiPlans.map((plan) => (
             <article key={plan.id} className="rounded-md border border-ink/10 p-4">
-              <p className="mb-3 text-sm font-semibold text-ink/60">
-                {plan.createdAt.toLocaleDateString("fr-CH")} - {plan.durationMinutes} min
-              </p>
+              <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
+                <p className="text-sm font-semibold text-ink/60">
+                  {plan.createdAt.toLocaleDateString("fr-CH")} - {plan.durationMinutes} min
+                </p>
+                <SaveAiPlanButton clientId={client.id} planId={plan.id} />
+              </div>
               <div className="whitespace-pre-wrap text-sm leading-6 text-ink/75">{cleanAiText(plan.generatedContent)}</div>
             </article>
           ))}
-          {!client.aiPlans.length ? <p className="text-sm text-ink/55">Aucune proposition IA enregistrée.</p> : null}
+          {!client.aiPlans.length ? (
+            <p className="text-sm text-ink/55">
+              Aucune proposition en attente. Générez une séance, puis sauvegardez-la dans la Timeline.
+            </p>
+          ) : null}
         </div>
       </section>
     </div>

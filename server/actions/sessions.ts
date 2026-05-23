@@ -39,6 +39,7 @@ export async function createSessionNoteAction(
 
   revalidatePath(`/app/clients/${clientId}`);
   revalidatePath(`/app/clients/${clientId}/sessions`);
+  revalidatePath(`/app/clients/${clientId}/timeline`);
   redirect(`/app/clients/${clientId}/sessions/${session.id}`);
 }
 
@@ -70,7 +71,8 @@ export async function updateSessionNoteAction(
   revalidatePath(`/app/clients/${clientId}`);
   revalidatePath(`/app/clients/${clientId}/sessions`);
   revalidatePath(`/app/clients/${clientId}/sessions/${sessionId}`);
-  return { success: "Séance mise à jour" };
+  revalidatePath(`/app/clients/${clientId}/timeline`);
+  redirect(`/app/clients/${clientId}/timeline`);
 }
 
 export async function deleteSessionAction(clientId: string, sessionId: string): Promise<void> {
@@ -80,5 +82,6 @@ export async function deleteSessionAction(clientId: string, sessionId: string): 
   });
   revalidatePath(`/app/clients/${clientId}`);
   revalidatePath(`/app/clients/${clientId}/sessions`);
-  redirect(`/app/clients/${clientId}/sessions`);
+  revalidatePath(`/app/clients/${clientId}/timeline`);
+  redirect(`/app/clients/${clientId}/timeline`);
 }

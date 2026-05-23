@@ -85,7 +85,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
           </section>
 
           <section className="rounded-lg border border-ink/10 bg-paper p-5">
-            <h2 className="text-lg font-semibold">Dernière proposition IA</h2>
+            <h2 className="text-lg font-semibold">Proposition IA en attente</h2>
             {client.aiPlans[0] ? (
               <details className="mt-3 rounded-md border border-ink/10 bg-white p-4" open>
                 <summary className="cursor-pointer text-sm font-semibold text-sage">Afficher / masquer toute la proposition</summary>
@@ -93,11 +93,11 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                   {cleanAiText(client.aiPlans[0].generatedContent)}
                 </div>
                 <Link href={`/app/clients/${client.id}/ai-session`} className="mt-4 inline-flex text-sm font-semibold text-sage">
-                  Voir toutes les propositions
+                  Sauvegarder dans la Timeline
                 </Link>
               </details>
             ) : (
-              <p className="mt-3 text-sm leading-6 text-ink/65">Aucune proposition sauvegardée.</p>
+              <p className="mt-3 text-sm leading-6 text-ink/65">Aucune proposition en attente.</p>
             )}
           </section>
         </div>

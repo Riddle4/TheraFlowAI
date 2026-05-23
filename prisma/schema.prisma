@@ -139,6 +139,7 @@ model Client {
   sessions       TherapySession[]
   aiPlans        AiGeneratedSessionPlan[]
   aiRequestLogs  AiRequestLog[]
+  documents      ClientDocument[]
   createdAt      DateTime                 @default(now())
   updatedAt      DateTime                 @updatedAt
 
@@ -238,4 +239,20 @@ model AiRequestLog {
 
   @@index([therapistId])
   @@index([clientId])
+}
+
+model ClientDocument {
+  id          String   @id @default(cuid())
+  clientId    String
+  client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  therapistId String
+  fileName    String
+  mimeType    String
+  sizeBytes   Int
+  data        Bytes
+  note        String?
+  createdAt   DateTime @default(now())
+
+  @@index([clientId])
+  @@index([therapistId])
 }

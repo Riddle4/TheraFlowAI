@@ -18,12 +18,12 @@ export async function GET(_: Request, { params }: { params: Promise<{ sessionId:
   const user = await requireUser();
   const { sessionId } = await params;
   const session = await prisma.therapySession.findFirst({
-    where: { id: sessionId, therapistId: user.id, status: "FINALIZED" },
+    where: { id: sessionId, therapistId: user.id },
     include: { client: true }
   });
 
   if (!session) {
-    return NextResponse.json({ error: "Séance finalisée introuvable" }, { status: 404 });
+    return NextResponse.json({ error: "Séance introuvable" }, { status: 404 });
   }
 
   const html = `<!doctype html>
@@ -44,6 +44,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ sessionId:
   <p class="meta">Client: ${escapeHtml(session.client.pseudonym)}<br>
   Date: ${session.sessionDate.toLocaleDateString("fr-CH")}<br>
   Durée: ${session.durationMinutes ?? "Non renseignée"} minutes</p>
+  ${block("Déroulé préparé", session.aiSessionPlan)}
   ${block("Objectif", session.objective)}
   ${block("État du client", session.clientState)}
   ${block("Interventions réalisées", session.performedInterventions)}
@@ -51,8 +52,8 @@ export async function GET(_: Request, { params }: { params: Promise<{ sessionId:
   ${block("Points à reprendre", session.pointsToRevisit)}
   ${block("Exercices donnés", session.exercisesGiven)}
   ${block("Prochaine étape", session.nextStep)}
-  ${block("Note structurée", session.structuredNote)}
-  ${block("Notes libres", session.rawNote)}
+  ${session.structuredNote ? block("Ancienne note structurée", session.structuredNote) : ""}
+  ${block("Notes du thérapeute", session.rawNote)}
 </body>
 </html>`;
 

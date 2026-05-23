@@ -45,11 +45,11 @@ export function SessionForm({ clientId, session }: { clientId: string; session?:
       <TextArea label="Points à reprendre" name="pointsToRevisit" defaultValue={session?.pointsToRevisit} />
       <TextArea label="Exercices donnés" name="exercisesGiven" defaultValue={session?.exercisesGiven} />
       <TextArea label="Prochaine étape" name="nextStep" defaultValue={session?.nextStep} />
-      <TextArea label="Notes libres" name="rawNote" defaultValue={session?.rawNote} />
+      <TextArea label="Notes en vrac pendant / après séance" name="rawNote" defaultValue={session?.rawNote} />
       {session?.structuredNote ? (
-        <TextArea label="Note IA structurée" name="structuredNote" defaultValue={session.structuredNote} />
+        <TextArea label="Ancienne note structurée" name="structuredNote" defaultValue={session.structuredNote} />
       ) : null}
-      <SubmitButton>{session ? "Mettre à jour la séance" : "Créer la note"}</SubmitButton>
+      <SubmitButton>{session ? "Sauvegarder la séance" : "Créer la séance"}</SubmitButton>
     </form>
   );
 }

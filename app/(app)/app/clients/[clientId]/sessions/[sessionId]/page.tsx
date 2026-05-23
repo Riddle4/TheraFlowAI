@@ -25,8 +25,8 @@ export default async function SessionDetailPage({
     <div className="grid gap-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <Link href={`/app/clients/${clientId}/sessions`} className="text-sm font-semibold text-sage">
-            Retour aux séances
+          <Link href={`/app/clients/${clientId}/timeline`} className="text-sm font-semibold text-sage">
+            Retour à la Timeline
           </Link>
           <h1 className="mt-2 text-3xl font-semibold text-ink">
             Séance du {session.sessionDate.toLocaleDateString("fr-CH")}
@@ -36,23 +36,23 @@ export default async function SessionDetailPage({
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {session.status === "FINALIZED" ? (
-            <a className="rounded-md bg-sage px-4 py-2.5 text-sm font-semibold text-white" href={exportHref}>
-              Exporter en Word
-            </a>
-          ) : (
-            <p className="rounded-md border border-ink/10 bg-paper px-4 py-2.5 text-sm text-ink/60">
-              Export disponible une fois finalisée
-            </p>
-          )}
+          <a className="rounded-md bg-sage px-4 py-2.5 text-sm font-semibold text-white" href={exportHref}>
+            Exporter en Word
+          </a>
           <DeleteSessionButton clientId={clientId} sessionId={session.id} />
         </div>
       </div>
 
       <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
         <section className="rounded-lg border border-ink/10 bg-paper p-5 shadow-soft">
-          <h2 className="mb-4 text-lg font-semibold">Éléments importants</h2>
+          <h2 className="mb-4 text-lg font-semibold">Déroulé de séance</h2>
           <dl className="grid gap-4 text-sm leading-6 text-ink/70">
+            {session.aiSessionPlan ? (
+              <div>
+                <dt className="font-semibold text-ink">Préparation IA</dt>
+                <dd className="whitespace-pre-wrap">{cleanAiText(session.aiSessionPlan)}</dd>
+              </div>
+            ) : null}
             <div>
               <dt className="font-semibold text-ink">Objectif</dt>
               <dd>{session.objective || "Non renseigné"}</dd>
@@ -77,17 +77,11 @@ export default async function SessionDetailPage({
               <dt className="font-semibold text-ink">Prochaine étape</dt>
               <dd>{session.nextStep || "Non renseigné"}</dd>
             </div>
-            {session.structuredNote ? (
-              <div>
-                <dt className="font-semibold text-ink">Note IA structurée</dt>
-                <dd className="whitespace-pre-wrap">{cleanAiText(session.structuredNote)}</dd>
-              </div>
-            ) : null}
           </dl>
         </section>
 
         <section className="rounded-lg border border-ink/10 bg-paper p-5 shadow-soft">
-          <h2 className="mb-4 text-lg font-semibold">Modifier la note</h2>
+          <h2 className="mb-4 text-lg font-semibold">Notes de séance</h2>
           <SessionForm clientId={clientId} session={session} />
         </section>
       </div>
