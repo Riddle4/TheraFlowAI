@@ -4,15 +4,17 @@ import { deleteClientDocumentAction } from "@/server/actions/documents";
 
 export function DeleteDocumentButton({ clientId, documentId }: { clientId: string; documentId: string }) {
   return (
-    <button
-      className="rounded-md border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50"
-      onClick={() => {
-        if (confirm("Supprimer ce document ?")) {
-          void deleteClientDocumentAction(clientId, documentId);
+    <form
+      action={deleteClientDocumentAction.bind(null, clientId, documentId)}
+      onSubmit={(event) => {
+        if (!confirm("Supprimer ce document ?")) {
+          event.preventDefault();
         }
       }}
     >
-      Supprimer
-    </button>
+      <button className="rounded-md border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50">
+        Supprimer
+      </button>
+    </form>
   );
 }

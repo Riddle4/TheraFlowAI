@@ -72,7 +72,7 @@ export async function updateSessionNoteAction(
   revalidatePath(`/app/clients/${clientId}/sessions`);
   revalidatePath(`/app/clients/${clientId}/sessions/${sessionId}`);
   revalidatePath(`/app/clients/${clientId}/timeline`);
-  redirect(`/app/clients/${clientId}/timeline`);
+  return { success: "Séance sauvegardée" };
 }
 
 export async function deleteSessionAction(clientId: string, sessionId: string): Promise<void> {

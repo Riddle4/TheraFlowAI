@@ -12,17 +12,21 @@ export function DeleteSessionButton({
   compact?: boolean;
 }) {
   return (
-    <button
-      className={`rounded-md border border-red-200 font-semibold text-red-700 hover:bg-red-50 ${
-        compact ? "px-3 py-1.5 text-xs" : "px-4 py-2.5 text-sm"
-      }`}
-      onClick={() => {
-        if (confirm("Supprimer cette séance ?")) {
-          void deleteSessionAction(clientId, sessionId);
+    <form
+      action={deleteSessionAction.bind(null, clientId, sessionId)}
+      onSubmit={(event) => {
+        if (!confirm("Supprimer cette séance ?")) {
+          event.preventDefault();
         }
       }}
     >
-      Supprimer la séance
-    </button>
+      <button
+        className={`rounded-md border border-red-200 font-semibold text-red-700 hover:bg-red-50 ${
+          compact ? "px-3 py-1.5 text-xs" : "px-4 py-2.5 text-sm"
+        }`}
+      >
+        Supprimer la séance
+      </button>
+    </form>
   );
 }

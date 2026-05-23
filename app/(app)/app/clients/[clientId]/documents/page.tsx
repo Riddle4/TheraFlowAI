@@ -11,6 +11,14 @@ function formatSize(sizeBytes: number) {
   return `${(sizeBytes / (1024 * 1024)).toFixed(1)} Mo`;
 }
 
+function previewKind(document: { fileName: string; mimeType: string }) {
+  const fileName = document.fileName.toLowerCase();
+  if (document.mimeType.startsWith("image/")) return "image";
+  if (document.mimeType === "application/pdf" || fileName.endsWith(".pdf")) return "pdf";
+  if (document.mimeType.startsWith("text/") || fileName.endsWith(".txt") || fileName.endsWith(".csv")) return "text";
+  return null;
+}
+
 export default async function ClientDocumentsPage({ params }: { params: Promise<{ clientId: string }> }) {
   const user = await requireUser();
   const { clientId } = await params;
@@ -47,6 +55,21 @@ export default async function ClientDocumentsPage({ params }: { params: Promise<
           <div className="mt-4 grid gap-3">
             {client.documents.map((document) => (
               <article key={document.id} className="rounded-md border border-ink/10 bg-white p-4">
+                {previewKind(document) === "image" ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={`/api/documents/${document.id}/preview`}
+                    alt={document.fileName}
+                    className="mb-4 max-h-80 w-full rounded-md border border-ink/10 object-contain"
+                  />
+                ) : null}
+                {previewKind(document) === "pdf" || previewKind(document) === "text" ? (
+                  <iframe
+                    src={`/api/documents/${document.id}/preview`}
+                    title={`Aperçu ${document.fileName}`}
+                    className="mb-4 h-80 w-full rounded-md border border-ink/10 bg-white"
+                  />
+                ) : null}
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <p className="font-semibold text-ink">{document.fileName}</p>
@@ -62,6 +85,11 @@ export default async function ClientDocumentsPage({ params }: { params: Promise<
                     >
                       Télécharger
                     </a>
+                    {!previewKind(document) ? (
+                      <span className="rounded-md border border-ink/10 px-3 py-2 text-sm text-ink/55">
+                        Aperçu non disponible
+                      </span>
+                    ) : null}
                     <DeleteDocumentButton clientId={client.id} documentId={document.id} />
                   </div>
                 </div>

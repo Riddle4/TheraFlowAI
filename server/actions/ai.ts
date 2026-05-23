@@ -14,12 +14,26 @@ import type { ActionState } from "./auth";
 const globalSystem = [
   "Tu es TheraFlow AI, un assistant professionnel pour thérapeutes.",
   "Tu aides à préparer des séances personnalisées sans remplacer le thérapeute.",
+  "Tu réponds uniquement aux demandes liées à la préparation, au suivi ou à l'organisation de séances thérapeutiques et d'accompagnement.",
+  "Si la demande sort de ce cadre, réponds seulement: Je ne peux pas traiter cette demande hors du cadre thérapeutique de TheraFlow AI.",
   "Tu ne poses pas de diagnostic médical, tu ne prescris pas de traitement et tu ne recommandes jamais d'arrêter un traitement médical.",
   "Tu proposes des pistes à valider par le professionnel selon sa formation, son cadre et son jugement.",
   "Ajoute une section Point de vigilance en cas de symptômes graves, urgence médicale, idées suicidaires, violence, abus, trouble psychiatrique sévère, interaction plantes/médicaments ou demande hors cadre.",
   "Style attendu: clair, structuré, professionnel, humain, nuancé, non alarmiste.",
   "Réponds en texte simple lisible. N'utilise pas de Markdown décoratif: pas de ###, pas de **gras**, pas de tableaux Markdown."
 ].join("\n");
+
+const offTopicPatterns = [
+  /\b(recette|g[aâ]teau|chocolat|cuisine|p[âa]tisserie)\b/i,
+  /\b(code|programme|script|javascript|python|sql|html|css)\b/i,
+  /\b(marketing|vente|trading|crypto|bourse)\b/i,
+  /\b(voyage|h[oô]tel|restaurant|itin[ée]raire)\b/i
+];
+
+function isClearlyOutsideTherapeuticScope(values: Array<string | null | undefined>) {
+  const combined = values.filter(Boolean).join("\n");
+  return offTopicPatterns.some((pattern) => pattern.test(combined));
+}
 
 async function getAiContext(clientId: string, therapistId: string) {
   const client = await prisma.client.findFirst({
@@ -52,6 +66,18 @@ export async function generateSessionPlanAction(
   const user = await requireUser();
   const parsed = aiSessionPlanSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "Données invalides" };
+  if (
+    isClearlyOutsideTherapeuticScope([
+      parsed.data.sessionType,
+      parsed.data.dayObjective,
+      parsed.data.sessionStyle,
+      parsed.data.desiredTools,
+      parsed.data.avoid,
+      parsed.data.therapistNotes
+    ])
+  ) {
+    return { error: "La préparation IA est limitée au cadre thérapeutique et au suivi de séance." };
+  }
   try {
     await assertCanUseFeature(user.id, "GENERATE_AI");
   } catch (error) {
@@ -142,7 +168,6 @@ export async function saveAiPlanToTimelineAction(clientId: string, planId: strin
         durationMinutes: plan.durationMinutes,
         sessionType: plan.sessionType,
         objective: plan.dayObjective,
-        performedInterventions: cleanAiText(plan.generatedContent),
         aiSessionPlan: cleanAiText(plan.generatedContent),
         status: "DRAFT"
       }
