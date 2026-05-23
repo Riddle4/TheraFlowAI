@@ -12,16 +12,16 @@ const navItems = [
 
 const steps = [
   {
-    title: "Préparez",
-    text: "Retrouvez le dossier client, son anamnèse, ses notes et son historique avant de préparer une séance structurée."
+    title: "Préparer",
+    text: "Retrouvez en un instant les informations clés de votre client: anamnèse, objectifs, notes précédentes et historique. Vous arrivez en séance avec une vision plus claire, plus ciblée et mieux structurée."
   },
   {
-    title: "Validez",
-    text: "Vous gardez la main: questions, exercices et précautions sont proposés pour être ajustés selon votre cadre professionnel."
+    title: "Accompagner",
+    text: "Recevez des propositions de questions, d'exercices, de pistes de séance et de points d'attention. Vous gardez la pleine maîtrise: chaque élément peut être adapté, modifié ou supprimé selon votre approche."
   },
   {
-    title: "Suivez",
-    text: "Après la séance, vos notes brutes deviennent une synthèse lisible, rattachée au bon client et disponible dans son historique."
+    title: "Suivre",
+    text: "Transformez vos notes brutes en synthèses lisibles et gardez un historique organisé pour chaque client. Le suivi devient plus simple, plus continu et plus facile à reprendre d'une séance à l'autre."
   }
 ];
 
@@ -186,7 +186,10 @@ export default async function HomePage() {
         <div className="mx-auto max-w-7xl px-6 py-14">
           <div className="max-w-2xl">
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-sage">Comment cela fonctionne</p>
-            <h2 className="mt-3 text-3xl font-semibold">Un flux simple, pensé pour la pratique.</h2>
+            <h2 className="mt-3 text-3xl font-semibold">Comment TheraFlow vous accompagne.</h2>
+            <p className="mt-4 text-sm leading-7 text-ink/62">
+              De la préparation au suivi, TheraFlow AI vous aide à gagner du temps sans standardiser votre pratique.
+            </p>
           </div>
           <div className="mt-8 grid gap-4 md:grid-cols-3">
             {steps.map((step, index) => (

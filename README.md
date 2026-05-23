@@ -64,7 +64,7 @@ npm run prisma:studio
 ```env
 DATABASE_URL="postgresql://..."
 OPENAI_API_KEY="sk-..."
-OPENAI_MODEL="gpt-4o-mini"
+OPENAI_MODEL="gpt-5.5"
 APP_URL="https://votre-domaine"
 ALLOW_PUBLIC_REGISTRATION="false"
 RESEND_API_KEY="re_..."
